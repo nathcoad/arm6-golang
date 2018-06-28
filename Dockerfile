@@ -18,6 +18,7 @@ RUN set -ex \
 		curl \
 		gcc \
 		musl-dev \
+		go \
 		git \
 	\
 	&& wget -q "$GOLANG_SRC_URL" -O golang.tar.gz \
