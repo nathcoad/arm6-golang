@@ -53,7 +53,7 @@ RUN [ "cross-build-end" ]
 
 # Image creation stage
 FROM resin/odroid-xu4-alpine-buildpack-deps:latest
-#RUN [ "cross-build-start" ]
+RUN [ "cross-build-start" ]
 RUN apk --no-cache add ca-certificates libtool
 
 COPY --from=app-build /go/bin/minio /usr/bin/
