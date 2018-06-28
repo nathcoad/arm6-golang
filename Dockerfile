@@ -1,4 +1,4 @@
-FROM arm32v6/alpine:latest
+FROM armhf/alpine:latest
 
 RUN apk add --no-cache ca-certificates
 
