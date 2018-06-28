@@ -1,11 +1,13 @@
-FROM armhf/alpine:latest
-
-RUN apk add --no-cache ca-certificates
+FROM resin/armv7hf-debian:latest
 
 ENV GOLANG_VERSION 1.10.3
 ENV GOLANG_ARCH linux-armv6l
 ENV GOLANG_SRC_URL https://dl.google.com/go/go$GOLANG_VERSION.$GOLANG_ARCH.tar.gz
 ENV GOLANG_SRC_SHA256 d3df3fa3d153e81041af24f31a82f86a21cb7b92c1b5552fb621bad0320f06b6
+
+RUN [ "cross-build-start" ]
+
+RUN apk add --no-cache ca-certificates
 
 RUN set -ex \
 	&& apk add --no-cache --virtual .build-deps \
@@ -26,6 +28,8 @@ RUN set -ex \
 	\
 	&& rm -rf /*.patch \
 	&& apk del .build-deps
+	
+RUN [ "cross-build-end" ] 	
 
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
