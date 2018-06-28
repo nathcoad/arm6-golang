@@ -1,22 +1,25 @@
 FROM resin/odroid-xu4-alpine-buildpack-deps:latest as app-build
 
-RUN [ "cross-build-start" ]
+#RUN [ "cross-build-start" ]
 
 ENV GOLANG_VERSION 1.10.3
 ENV GOLANG_ARCH linux-armv6l
 ENV GOLANG_SRC_URL https://dl.google.com/go/go$GOLANG_VERSION.$GOLANG_ARCH.tar.gz
 ENV GOLANG_SRC_SHA256 d3df3fa3d153e81041af24f31a82f86a21cb7b92c1b5552fb621bad0320f06b6
 
+#RUN echo http://mirror.yandex.ru/mirrors/alpine/v3.7/main > /etc/apk/repositories; \
+#    echo http://mirror.yandex.ru/mirrors/alpine/v3.7/community >> /etc/apk/repositories
+
 # Compile GO
-
-RUN apk add --no-cache ca-certificates
-
 RUN set -ex \
+	&& apk update \
 	&& apk add --no-cache --virtual .build-deps \
+		ca-certificates openssl \
 		bash \
+		curl \
 		gcc \
 		musl-dev \
-		openssl \
+		go \
 		git \
 	\
 	&& export GOROOT_BOOTSTRAP="$(go env GOROOT)" \
@@ -28,7 +31,6 @@ RUN set -ex \
 	&& cd /usr/local/go/src \
 	&& ./make.bash \
 	\
-	&& apk del .build-deps
 	
 ENV GOROOT /usr/local/go
 ENV GOPATH /go
@@ -45,8 +47,6 @@ ENV MINIO_ACCESS_KEY_FILE=access_key \
 WORKDIR /go/src/github.com/minio/
 
 RUN  \
-     apk add --no-cache ca-certificates curl && \
-     apk add --no-cache --virtual .build-deps git && \
      echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
      go get -v -d github.com/minio/minio && \
      cd /go/src/github.com/minio/minio && \
@@ -54,7 +54,7 @@ RUN  \
      rm -rf /go/pkg /go/src /usr/local/go && apk del .build-deps
 	
 	
-RUN [ "cross-build-end" ] 	
+#RUN [ "cross-build-end" ] 	
 
 
 
@@ -63,8 +63,13 @@ FROM resin/odroid-xu4-alpine-buildpack-deps:latest
 
 RUN apk --no-cache add ca-certificates libtool
 
-COPY --from=app-build /go/src/github.com/minio/ /minio
+COPY --from=app-build /go/bin/minio /usr/bin/
 COPY docker-entrypoint.sh healthcheck.sh /usr/bin/
+
+RUN chmod +x /usr/bin/minio
+RUN chmod +x /usr/bin/docker-entrypoint.sh
+RUN chmod +x /usr/bin/healthcheck.sh
+#RUN mkdir -p /data
 
 EXPOSE 9000
 
