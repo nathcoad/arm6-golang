@@ -26,7 +26,6 @@ RUN set -ex \
 	&& cd /usr/local/go/src \
 	&& ./make.bash \
 	\
-	&& rm -rf /*.patch \
 	&& apk del .build-deps
 	
 RUN [ "cross-build-end" ] 	
