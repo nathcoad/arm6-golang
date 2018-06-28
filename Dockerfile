@@ -12,7 +12,6 @@ ENV GOLANG_SRC_SHA256 d3df3fa3d153e81041af24f31a82f86a21cb7b92c1b5552fb621bad032
 
 # Compile GO
 RUN set -ex \
-	&& apk update \
 	&& apk add --no-cache --virtual .build-deps \
 		ca-certificates openssl \
 		bash \
@@ -22,14 +21,15 @@ RUN set -ex \
 		go \
 		git \
 	\
-	&& export GOROOT_BOOTSTRAP="$(go env GOROOT)" \
-	\
 	&& wget -q "$GOLANG_SRC_URL" -O golang.tar.gz \
 	&& echo "$GOLANG_SRC_SHA256  golang.tar.gz" | sha256sum -c - \
 	&& tar -C /usr/local -xzf golang.tar.gz \
-	&& rm golang.tar.gz \
+	&& rm golang.tar.gz
+	\
+	
+RUN export GOROOT_BOOTSTRAP="$(go env GOROOT)" \
 	&& cd /usr/local/go/src \
-	&& ./make.bash \
+	&& ./make.bash
 	\
 	
 ENV GOROOT /usr/local/go
