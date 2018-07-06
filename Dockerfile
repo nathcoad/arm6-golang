@@ -52,7 +52,7 @@ RUN rm -rf /go/pkg /go/src /usr/local/go && apk del .build-deps
 RUN [ "cross-build-end" ]
 
 # Image creation stage
-FROM resin/odroid-xu4-alpine-buildpack-deps:latest
+FROM resin/armhf-alpine:latest
 RUN [ "cross-build-start" ]
 RUN apk --no-cache add ca-certificates libtool
 
