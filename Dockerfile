@@ -6,6 +6,7 @@ ENV GOLANG_VERSION 1.11.2
 ENV GOLANG_ARCH linux-armv6l
 ENV GOLANG_SRC_URL https://dl.google.com/go/go$GOLANG_VERSION.$GOLANG_ARCH.tar.gz
 ENV GOLANG_SRC_SHA256 b9d16a8eb1f7b8fdadd27232f6300aa8b4427e5e4cb148c4be4089db8fb56429
+ENV CGO_ENABLED 0
 
 # Compile GO
 RUN set -ex \
@@ -34,7 +35,6 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 # Build minio
-ENV CGO_ENABLED 0
 ENV MINIO_UPDATE off
 ENV MINIO_ACCESS_KEY_FILE=access_key \
     MINIO_SECRET_KEY_FILE=secret_key
